@@ -112,7 +112,7 @@ CalculateEpigenomeScores <- function(
     }
 
     # only keep seqnames in common 
-    common_seqnames <- as.character(intersect(GenomeInfoDb::seqnames(peaks_gr), GenomeInfoDb::seqnames(chromHMM_states)))
+    common_seqnames <- as.character(GenomicRanges::intersect(GenomeInfoDb::seqnames(peaks_gr), GenomeInfoDb::seqnames(chromHMM_states)))
     peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
     chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
 
@@ -301,7 +301,7 @@ AnnotatePeaks <- function(
     # compute overlap widths
     ov_df <- as.data.frame(ov)
     ov_df$width <- width(
-        pintersect(peaks_gr[ov_df$queryHits],
+        GenomicRanges::pintersect(peaks_gr[ov_df$queryHits],
                    chromHMM_states[ov_df$subjectHits])
     )
 
