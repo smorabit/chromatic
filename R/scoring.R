@@ -119,8 +119,8 @@ CalculateEpigenomeScores <- function(
     print(common_seqnames)
     # peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
     # chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
-    peaks_gr <- peaks_gr[GenomeInfoDb::seqnames(peaks_gr) %in% common_seqnames]
-    chromHMM_states <- chromHMM_states[GenomeInfoDb::seqnames(chromHMM_states) %in% common_seqnames]
+    peaks_gr <- peaks_gr[as.character(GenomeInfoDb::seqnames(peaks_gr)) %in% common_seqnames]
+    chromHMM_states <- chromHMM_states[as.character(GenomeInfoDb::seqnames(chromHMM_states)) %in% common_seqnames]
 
     # remove non-standard chromosomes:
     if(remove_nonstandard_chromosomes){
