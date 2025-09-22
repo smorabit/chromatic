@@ -38,6 +38,7 @@ devtools::create("chromatic")
 setwd('chromatic')
 
 # add functions to the .R 
+# (doing this outside R with Bash)
 
 # document functions 
 devtools::document()
@@ -45,12 +46,16 @@ devtools::document()
 # install the package:
 devtools::install()
 
+usethis::use_gpl3_license()
+
 # Set up the necessary files for pkgdown (only run this once)
 usethis::use_git()
 usethis::use_pkgdown_github_pages()
 
 # build the intitial version of the site!
 pkgdown::build_site()
+
+# commit and push to Github!
 
 
 ```

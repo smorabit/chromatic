@@ -113,8 +113,10 @@ CalculateEpigenomeScores <- function(
 
     # only keep seqnames in common 
     common_seqnames <- as.character(GenomicRanges::intersect(GenomeInfoDb::seqnames(peaks_gr), GenomeInfoDb::seqnames(chromHMM_states)))
-    peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
-    chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
+    # peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
+    # chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
+    peaks_gr <- peaks_gr[GenomicRanges::seqnames(peaks_gr) %in% common_seqnames]
+    chromHMM_states <- chromHMM_states[GenomicRanges::seqnames(chromHMM_states) %in% common_seqnames]
 
     # remove non-standard chromosomes:
     if(remove_nonstandard_chromosomes){
