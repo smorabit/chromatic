@@ -68,11 +68,11 @@ matrix suitable for downstream analyses.</p>
 <dl><dt id="arg-peaks-mat">peaks_mat<a class="anchor" aria-label="anchor" href="#arg-peaks-mat"></a></dt>
 <dd><p>A sparse or dense matrix of peak accessibility counts
 (rows = peaks, columns = cells). Typically obtained from
-<code>GetAssayData</code> on the ATAC assay.</p></dd>
+<code><a href="https://satijalab.github.io/seurat-object/reference/AssayData.html" class="external-link">GetAssayData</a></code> on the ATAC assay.</p></dd>
 
 
 <dt id="arg-peaks-gr">peaks_gr<a class="anchor" aria-label="anchor" href="#arg-peaks-gr"></a></dt>
-<dd><p>A <code>GRanges</code> object of the same
+<dd><p>A <code><a href="https://rdrr.io/pkg/GenomicRanges/man/GRanges-class.html" class="external-link">GRanges</a></code> object of the same
 length as the number of rows in <code>peaks_mat</code>, containing at least
 one column named <code>annotation</code> giving the chromatin state label
 for each peak.</p></dd>
