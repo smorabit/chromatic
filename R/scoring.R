@@ -23,8 +23,6 @@
 #'   (passed to \code{ExcludeUncommonPeaks}).
 #' @param min_counts Integer; minimum total counts required for a peak to be kept 
 #'   (passed to \code{ExcludeUncommonPeaks}).
-#' @param min_overlap Integer; minimum overlap between peak and chromHMM regions for a peak to be annotated 
-#'   (passed to \code{AnnotatePeaks}).
 #' @param state_signs Named vector indicating the “sign” (active/repressive) of each chromatin state.
 #'   If NULL (default), will be generated automatically from \code{chromHMM_states} using 
 #'   \code{ChromatinStateSigns()} and the patterns provided.
@@ -81,7 +79,6 @@ CalculateEpigenomeScores <- function(
     filter_features = TRUE,
     min_cells = 100,
     min_counts = 100,
-    min_overlap = 1,
     state_signs = NULL,
     covariates = NULL,
     state_col = "name",
@@ -135,8 +132,7 @@ CalculateEpigenomeScores <- function(
     peaks_gr <- AnnotatePeaks(
         peaks_gr, 
         chromHMM_states,
-        state_col = state_col,
-        min_overlap
+        state_col = state_col
     )
 
     # get the names of the peaks 
