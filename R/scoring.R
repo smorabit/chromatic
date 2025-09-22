@@ -116,9 +116,6 @@ CalculateEpigenomeScores <- function(
 
     # only keep seqnames in common 
     common_seqnames <- as.character(GenomicRanges::intersect(GenomeInfoDb::seqnames(peaks_gr), GenomeInfoDb::seqnames(chromHMM_states)))
-    print(common_seqnames)
-    # peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
-    # chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
     peaks_gr <- peaks_gr[as.character(GenomeInfoDb::seqnames(peaks_gr)) %in% common_seqnames]
     chromHMM_states <- chromHMM_states[as.character(GenomeInfoDb::seqnames(chromHMM_states)) %in% common_seqnames]
 
@@ -424,10 +421,10 @@ ExcludeUncommonPeaks <- function(
     total_peaks <- nrow(peaks_mat)
 
     # total counts per peak
-    peak_counts <- rowSums(peaks_mat)
+    peak_counts <- Matrix::rowSums(peaks_mat)
 
     # number of cells with nonzero counts per peak
-    cells_per_peak <- rowSums(peaks_mat > 0)
+    cells_per_peak <- Matrix::rowSums(peaks_mat > 0)
 
     # indices of peaks meeting both thresholds
     keep_peaks <- intersect(
