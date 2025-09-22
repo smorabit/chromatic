@@ -112,7 +112,7 @@ CalculateEpigenomeScores <- function(
     }
 
     # only keep seqnames in common 
-    common_seqnames <- as.character(intersect(seqnames(peaks_gr), seqnames(chromHMM_states)))
+    common_seqnames <- as.character(intersect(GenomeInfoDb::seqnames(peaks_gr), GenomeInfoDb::seqnames(chromHMM_states)))
     peaks_gr <- subset(peaks_gr, seqnames %in% common_seqnames)
     chromHMM_states <- subset(chromHMM_states, seqnames %in% common_seqnames)
 
@@ -134,11 +134,14 @@ CalculateEpigenomeScores <- function(
 
     # get the names of the peaks 
     # TODO: this should be changed based on how the Signac obj is setup
-    peaks_names <- paste0(seqnames(peaks_gr), "-", start(peaks_gr), "-", end(peaks_gr))
+    peaks_names <- paste0(GenomeInfoDb::seqnames(peaks_gr), "-", BiocGenerics::start(peaks_gr), "-", BiocGenerics::end(peaks_gr))
 
     # filter the peaks matrix by peaks that we are keeping
     peaks_mat <- GetAssayData(seurat_obj, layer='counts', assay = assay)
     peaks_mat <- peaks_mat[peaks_names,]
+
+    print('peaksmat')
+    print(dim(peaks_mat))
 
     # get the peaks matrix
     if(filter_features){
@@ -178,9 +181,6 @@ CalculateEpigenomeScores <- function(
             repressive_patterns = repressive_patterns
         )
     } 
-
-    print('state_signs:')
-    print(state_signs )
 
     print("Calculating erosion score ")
 
@@ -398,7 +398,7 @@ ExcludeUncommonPeaks <- function(
     if (!inherits(peaks_gr, "GRanges")) {
         stop("`peaks_gr` must be a GRanges object.")
     }
-    if (!is.matrix(peaks_mat)) {
+    if (!inherits(peaks_mat, 'Matrix')) {
         stop("`peaks_mat` must be a matrix (rows = peaks, cols = cells).")
     }
     if (nrow(peaks_mat) != length(peaks_gr)) {
@@ -625,6 +625,63 @@ ChromatinStateSigns <- function(
     return(state_signs)
 }
 
+#' Calculate per-cell chromatin state counts from annotated peaks
+#'
+#' This helper function aggregates a peak-by-cell matrix into a 
+#' chromatin state–by-cell matrix based on the state annotations 
+#' assigned to each peak. Each cell’s counts across peaks belonging 
+#' to the same chromatin state are summed to produce a per-state 
+#' count matrix, which is then transposed to return a cell-by-state 
+#' matrix suitable for downstream analyses.
+#'
+#' @param peaks_mat A sparse or dense matrix of peak accessibility counts 
+#'   (rows = peaks, columns = cells). Typically obtained from 
+#'   \code{\link[Seurat]{GetAssayData}} on the ATAC assay.
+#' @param peaks_gr A \code{\link[GenomicRanges]{GRanges}} object of the same 
+#'   length as the number of rows in \code{peaks_mat}, containing at least 
+#'   one column named \code{annotation} giving the chromatin state label 
+#'   for each peak.
+#'
+#' @return A cell-by-state matrix of summed fragment counts per chromatin state 
+#'   (rows = cells, columns = chromatin states).
+#'
+#' @details This function assumes that each row of \code{peaks_mat} corresponds 
+#'   to the same peak as the corresponding entry in \code{peaks_gr}, and that 
+#'   each peak has a valid chromatin state annotation in \code{peaks_gr$annotation}. 
+#'   Peaks with the same state annotation are grouped and their counts summed 
+#'   across cells. The resulting state-by-cell matrix is transposed to return 
+#'   cell-by-state counts.
+#'
+#' @examples
+#' # peaks_mat: peaks x cells matrix from ATAC assay
+#' # peaks_gr: GRanges of peaks with 'annotation' column
+#' state_matrix <- CalculateStateMatrix(peaks_mat, peaks_gr)
+#'
+#' @export
+CalculateStateMatrix <- function(
+    peaks_mat, 
+    peaks_gr 
+){ 
+
+    if (nrow(peaks_mat) != length(peaks_gr)) {
+        stop("Number of rows in peaks_mat (", nrow(peaks_mat),
+             ") does not match length of peaks_gr (", length(peaks_gr), ").")
+    }
+
+    if (!"annotation" %in% colnames(mcols(peaks_gr))) {
+        stop("peaks_gr must contain a column named 'annotation' with chromatin state labels.")
+    }
+
+    # set rownames to the state annotations 
+    rownames(peaks_mat) <- as.character(peaks_gr$annotation) 
+    
+    # Sum across segments within each state: 
+    groupings <- rownames(peaks_mat)
+    state_matrix <- rowsum(peaks_mat, groupings)
+    state_matrix <- t(state_matrix) 
+    return(state_matrix) 
+}
+
 
 #' Calculate Erosion Scores from Chromatin State Matrices
 #'
@@ -700,7 +757,7 @@ ErosionScore <- function(
     state_z <- scale(log_frac_centered)  # gives a matrix same dim as log_frac_centered
 
     # Multiply each state by its sign (+1 for repressive, -1 for active)
-    signed_z <- sweep(state_z, 2, sign_vector[colnames(state_z)], "*")
+    signed_z <- sweep(state_z, 2, state_signs[colnames(state_z)], "*")
 
     # Sum across states to get one erosion/entropy score per cell
     erosion_score <- rowSums(signed_z)
