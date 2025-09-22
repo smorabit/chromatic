@@ -2,6 +2,7 @@
 
 export(AnnotatePeaks)
 export(CalculateEpigenomeScores)
+export(CalculateStateMatrix)
 export(ChromatinStateSigns)
 export(EntropyScore)
 export(ErosionScore)
