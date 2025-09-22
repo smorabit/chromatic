@@ -18,6 +18,8 @@ mamba install -c conda-forge -c bioconda \
   bioconductor-genomicranges \
   bioconductor-motifmatchr
 
+mamba install -c bioconda macs3
+
 ```
 
 ```r 
