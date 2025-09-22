@@ -28,6 +28,7 @@ library(devtools)
 library(roxygen2)
 library(pkgdown)
 library(usethis)
+library(dplyr)
 
 setwd("/Users/sam.morabito/Library/CloudStorage/GoogleDrive-sam.morabito@cnag.eu/My Drive/projects/")
 

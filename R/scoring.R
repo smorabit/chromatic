@@ -67,6 +67,9 @@
 #' )
 #' }
 #'
+#' @importFrom dplyr %>%
+#' @importFrom IRanges subsetByOverlaps
+#' @importFrom GenomeInfoDb keepStandardChromosomes, seqnames
 #' @export
 CalculateEpigenomeScores <- function(
     seurat_obj,
