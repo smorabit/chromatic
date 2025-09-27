@@ -2,12 +2,12 @@
 
 export(AnnotatePeaks)
 export(CalculateStateMatrix)
-export(ChromaticScores)
 export(ChromatinStateSigns)
 export(EntropyScore)
 export(ErosionScore)
 export(ExcludeUncommonPeaks)
 export(FetchChromatinStates)
+export(RunChromatic)
 importFrom(GenomeInfoDb,seqnames)
 importFrom(IRanges,subsetByOverlaps)
 importFrom(dplyr,"%>%")
