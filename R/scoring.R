@@ -1,6 +1,6 @@
 
 
-#' CalculateEpigenomeScores
+#' RunChromatic
 #'
 #' A wrapper function to compute chromatin-state–based scores from scATAC-seq data 
 #' stored in a Seurat object. This function:
@@ -59,7 +59,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' scores <- CalculateEpigenomeScores(
+#' scores <- RunChromatic(
 #'     seurat_obj = atac_seurat,
 #'     chromHMM_states = chromHMM_mouse,
 #'     stoplist = blacklist_gr,
@@ -71,7 +71,7 @@
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom GenomeInfoDb seqnames
 #' @export
-CalculateEpigenomeScores <- function(
+RunChromatic <- function(
     seurat_obj,
     chromHMM_states, 
     stoplist = NULL,

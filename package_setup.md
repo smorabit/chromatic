@@ -62,3 +62,11 @@ pkgdown::build_site()
 
 
 
+inlclude data 
+
+```{r eval=FALSE}
+
+tissue_map <- read.csv('~/Documents/roadmap_tissues.csv')
+usethis::use_data(tissue_map, overwrite = TRUE)
+
+```

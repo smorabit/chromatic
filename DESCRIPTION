@@ -17,3 +17,6 @@ Imports:
     GenomeInfoDb,
     entropy,
     dplyr
+Depends: 
+    R (>= 3.5)
+LazyData: true

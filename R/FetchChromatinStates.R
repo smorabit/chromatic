@@ -26,21 +26,25 @@ FetchChromatinStates <- function(model = 18,
   
   # Example lookup (extend this table for full Roadmap):
   # TODO, fix this
-  tissue_map <- data.frame(
-    code = c("E066", "E075"),
-    name = c("Liver", "Brain"),
-    stringsAsFactors = FALSE
-  )
+  # tissue_map <- data.frame(
+  #   code = c("E066", "E075"),
+  #   name = c("Liver", "Brain"),
+  #   stringsAsFactors = FALSE
+  # )
 
-  if (!tissue_code %in% tissue_map$code) {
-    # try match by name
-    name_match <- match(tolower(tissue), tolower(tissue_map$name))
-    if (!is.na(name_match)) {
-      tissue_code <- tissue_map$code[name_match]
+  # is this needed?
+  tissue_map <- chromatic::tissue_map
+
+  if (!(toupper(tissue) %in% tissue_map$EID)) {
+    # try match by mnemonic
+    match_idx <- match(tolower(tissue), tolower(tissue_map$Mnemonic))
+    if (!is.na(match_idx)) {
+      tissue_code <- tissue_map$EID[match_idx]
     } else {
-      warning("Unknown tissue name/code. Using input directly: ", tissue)
-      tissue_code <- tissue
+      stop("Unknown tissue name/code: ", tissue)
     }
+  } else {
+    tissue_code <- toupper(tissue)
   }
 
   # --- 2. Model URL parts ---

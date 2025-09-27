@@ -43,3 +43,16 @@ library(rtracklayer)
 seurat_obj <- readRDS("CRC_Tumor_multiome.rds")
 
 ```
+
+Plot the 
+
+
+## Run chromatic 
+
+### Set up chromatin states 
+
+`chromatic` requires a set of chromatin state annotations in order to calculate the chromatin entropy scores. 
+
+### `RunChromatic`
+
+### Downstream plotting
