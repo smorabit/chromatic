@@ -33,7 +33,7 @@ FetchChromatinStates <- function(model = 18,
   # )
 
   # is this needed?
-  tissue_map <- chromatic::tissue_map
+  # tissue_map <- chromatic::tissue_map
 
   if (!(toupper(tissue) %in% tissue_map$EID)) {
     # try match by mnemonic
