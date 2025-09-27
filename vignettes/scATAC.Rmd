@@ -1,0 +1,45 @@
+---
+title: "chromatic in scATAC-seq"
+output: rmarkdown::html_vignette
+author: Sam Morabito
+description: >
+  Tutorial for calculating chromatin entropy in scATAC-seq data
+vignette: >
+  %\VignetteIndexEntry{chromatic in scATAC-seq}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Compiled: 27-09-2025
+
+Source: `vignettes/scATAC.Rmd`
+
+## Introduction
+
+This tutorial demonstrates the key functionality of `chromatic` to calculate cell-level *chromatin entropy* scores in a scATAC-seq dataset. For this tutorial, we demonstrate the package on a dataset of colorectal cancer tumors profiled with 10X Genomics Multiome (ATAC + RNA), although only the ATAC assay is needed for the analysis. At this time the dataset is not currently available to the public, but in the future we will update this tutorial to use a publicly available dataset. To follow along with this tutorial, please use your own dataset.
+
+### Load the dataset and required libraries
+
+First we load the processed dataset and the required R libraries for this tutorial.
+
+```{r eval=FALSE}
+# single-cell analysis packages
+library(Seurat)
+library(Signac)
+
+# data / plotting packages
+library(tidyverse)
+library(cowplot)
+library(patchwork)
+theme_set(theme_cowplot())
+
+# additional Genomics packages
+library(EnsDb.Hsapiens.v86)
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(GenomicRanges)
+library(rtracklayer) 
+
+# load the processed Seurat object
+seurat_obj <- readRDS("CRC_Tumor_multiome.rds")
+
+```

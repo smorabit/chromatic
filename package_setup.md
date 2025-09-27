@@ -4,7 +4,6 @@
 ```bash
 
 conda create -n chromatic -c conda-forge python=3.11 mamba 
-
 conda activate chromatic
 
 mamba install -c conda-forge -c bioconda \
