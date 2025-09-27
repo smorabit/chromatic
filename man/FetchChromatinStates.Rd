@@ -2,34 +2,34 @@
 % Please edit documentation in R/FetchChromatinStates.R
 \name{FetchChromatinStates}
 \alias{FetchChromatinStates}
-\title{Download Roadmap ChromHMM Segmentation as GRanges}
+\title{Fetch ChromHMM Chromatin States from Roadmap Epigenomics}
 \usage{
 FetchChromatinStates(
   model = 18,
   tissue,
   genome = c("hg19", "hg38"),
   mnemonics = TRUE,
-  cache_dir = "~/.chromatic_cache"
+  cache_dir = "~/.chromatic_cache",
+  fuzzy_matching = TRUE
 )
 }
 \arguments{
-\item{model}{ChromHMM model. One of 15, 18, or 25.}
+\item{model}{Which ChromHMM model to use: 15, 18, or 25 states.}
 
-\item{tissue}{Tissue code (e.g. "E075") or human-readable name (e.g. "Liver").}
+\item{tissue}{Either a Roadmap Epigenome ID (e.g., "E066"), a tissue mnemonic (e.g., "LNG.IMR90"),
+or a human-readable tissue name (e.g., "IMR90 fetal lung fibroblasts").}
 
-\item{genome}{Genome build. One of "hg19" or "hg38".}
+\item{genome}{Genome assembly: "hg19" or "hg38".}
 
-\item{mnemonics}{Logical. If TRUE (default), download the mnemonics version (state names).
-If FALSE, download the raw numeric states version.}
+\item{mnemonics}{Logical, if TRUE returns the mnemonic states (default) instead of raw state numbers.}
 
-\item{cache_dir}{Directory to cache downloads (default "~/.chromatic_cache").}
+\item{cache_dir}{Directory to cache downloaded files.}
+
+\item{fuzzy_matching}{Logical, if TRUE allows partial/fuzzy matching with an interactive prompt.}
 }
 \value{
-A GRanges object with ChromHMM state annotations.
+A \code{GRanges} object with ChromHMM states.
 }
 \description{
-Download Roadmap ChromHMM Segmentation as GRanges
-}
-\examples{
-chromHMM <- FetchChromatinStates(model = 18, tissue = "E075", genome = "hg38")
+Fetch ChromHMM Chromatin States from Roadmap Epigenomics
 }

@@ -143,9 +143,6 @@ RunChromatic <- function(
     peaks_mat <- GetAssayData(seurat_obj, layer='counts', assay = assay)
     peaks_mat <- peaks_mat[peaks_names,]
 
-    print('peaksmat')
-    print(dim(peaks_mat))
-
     # get the peaks matrix
     if(filter_features){
         print("Excluding uncommon peaks")
@@ -164,7 +161,7 @@ RunChromatic <- function(
     # 2. Set up the matrix
     #---------------------------------------------------------------
 
-    print("State matrix")
+    print("Calculating chromatin state matrix")
 
     state_matrix <- CalculateStateMatrix(
         peaks_mat = peaks_mat, 
@@ -766,24 +763,24 @@ ErosionScore <- function(
     erosion_score <- rowSums(signed_z)
 
     out_df <- as.data.frame(signed_z)
-    out_df$erosion_score <- erosion_score
+    out_df$erosion <- erosion_score
 
     if(!is.null(covariates)){
 
         # build data frame for regression
         reg_df <- meta[, covariates, drop=FALSE]
-        reg_df$erosion_score <- erosion_score
+        reg_df$erosion <- erosion_score
 
         # build formula: erosion_score ~ covar1 + covar2 + ...
         form <- as.formula(
-            paste("erosion_score ~", paste(covariates, collapse = " + "))
+            paste("erosion ~", paste(covariates, collapse = " + "))
         )
 
         # fit model
         model <- lm(form, data = reg_df)
 
         # store residuals as covariate-corrected erosion score
-        out_df$erosion_score_corrected <- resid(model)
+        out_df$erosion_corrected <- resid(model)
     }
     
     return(out_df)
@@ -884,7 +881,7 @@ EntropyScore <- function(
         model <- lm(form, data = reg_df)
 
         # store residuals as covariate-corrected entropy score
-        out_df$entropy_score_corrected <- resid(model)
+        out_df$entropy_corrected <- resid(model)
     }
 
     return(out_df)

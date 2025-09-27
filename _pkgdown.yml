@@ -2,7 +2,9 @@ url: https://smorabit.github.io/chromatic/
 
 template:
   bootstrap: 5
-  light-switch: true
+  includes:
+    in_header: |
+      <link rel="stylesheet" href="extra.css">
   bslib:
     bootswatch: quartz
     base_font: {google: "Montserrat"}
@@ -15,7 +17,7 @@ authors:
 navbar:
   structure:
     left: [articles, reference, news]
-    right: [search, github]
+    right: [search, github, lightswitch]
   components:
    news:
      text: Changes

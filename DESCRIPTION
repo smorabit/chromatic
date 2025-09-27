@@ -1,6 +1,6 @@
 Package: chromatic
 Title: 
-Version: 0.0.01
+Version: 0.0.02
 Authors@R: 
     person("Sam", "Morabito", , "sam.morabito@cnag.eu", role = c("aut", "cre"))
 Description: `chromatic` is an R package for analyzing chromatin state heterogeneity in high-dimensional epigenomic sequencing assays, such as scATAC-seq. `chromatic` calculates cell-level *chromatin entropy* scores based on a cell's usage of different chromatin states (enhancers, promoters, silencers, etc). Chromatin entropy scores can indicate important cell populations and reveal epigenomic remodeling underlying cell state changes across many systems including neurodegeneration, cancer, and development.
@@ -8,7 +8,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-URL: https://smorabit.github.io/chromatic/
+URL: https://smorabit.github.io/chromatic/, https://github.com/smorabit/chromatic
 Imports:
     Seurat,
     Signac,
