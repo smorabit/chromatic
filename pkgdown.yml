@@ -1,8 +1,9 @@
 pandoc: 3.1.11
 pkgdown: 2.1.3
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-09-22T17:27Z
+articles:
+  scATAC: scATAC.html
+last_built: 2025-09-27T15:16Z
 urls:
   reference: https://smorabit.github.io/chromatic/reference
   article: https://smorabit.github.io/chromatic/articles
