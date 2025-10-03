@@ -27,3 +27,6 @@ navbar:
     menu:
     - text: scATAC-seq tutorial
       href: articles/scATAC.html
+
+figures:
+  path: vignettes/figures

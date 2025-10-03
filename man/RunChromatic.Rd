@@ -7,9 +7,13 @@
 RunChromatic(
   seurat_obj,
   chromHMM_states,
+  peaks_gr = NULL,
   stoplist = NULL,
   remove_nonstandard_chromosomes = TRUE,
+  min_overlap = 50,
+  min_overlap_frac = 0.25,
   filter_features = TRUE,
+  skip_annotation = FALSE,
   min_cells = 100,
   min_counts = 100,
   state_signs = NULL,
@@ -18,6 +22,8 @@ RunChromatic(
   active_patterns = c("TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk"),
   repressive_patterns = c("ReprPC", "Quies", "Het"),
   pseudocount = 0.5,
+  z_group_by = NULL,
+  z_group_name = NULL,
   assay = "ATAC"
 )
 }
@@ -25,41 +31,65 @@ RunChromatic(
 \item{seurat_obj}{Seurat object containing scATAC-seq data. Must have peaks as
 features (rows) and cells as columns in the \code{assay} specified.}
 
-\item{chromHMM_states}{A \code{GenomicRanges} object containing ChromHMM state annotations.
+\item{chromHMM_states}{A \code{GRanges} object containing ChromHMM state annotations.
 Should have a column with state labels specified by \code{state_col}.}
 
-\item{stoplist}{(Optional) A \code{GenomicRanges} object of regions to exclude (e.g. blacklisted regions).
+\item{peaks_gr}{(Optional) A \code{GRanges} object of peaks. If \code{NULL} (default),
+peaks are extracted from the input Seurat object. If provided, will be used directly.}
+
+\item{stoplist}{(Optional) A \code{GRanges} object of regions to exclude (e.g. blacklisted regions).
 If provided, peaks overlapping these regions will be removed.}
 
 \item{remove_nonstandard_chromosomes}{Logical; if TRUE (default), non-standard chromosomes
 (e.g. scaffolds) will be removed from both peaks and chromHMM annotations.}
 
+\item{min_overlap}{Numeric; minimum overlap width (bp) required for a peak to be assigned
+to a ChromHMM state. Default = 50.}
+
+\item{min_overlap_frac}{Numeric or \code{NULL}; minimum fraction of a peak's length
+that must overlap a ChromHMM state for assignment. Default = 0.25.}
+
 \item{filter_features}{Logical; if TRUE (default), peaks are filtered to exclude features
 with low coverage using \code{ExcludeUncommonPeaks}.}
 
+\item{skip_annotation}{Logical; if TRUE, skips ChromHMM annotation step and assumes that
+the provided \code{peaks_gr} (or peaks from \code{seurat_obj}) already contain
+an \code{annotation} column. Default = FALSE.}
+
 \item{min_cells}{Integer; minimum number of cells required for a peak to be kept
-(passed to \code{ExcludeUncommonPeaks}).}
+(passed to \code{ExcludeUncommonPeaks}). Default = 100.}
 
 \item{min_counts}{Integer; minimum total counts required for a peak to be kept
-(passed to \code{ExcludeUncommonPeaks}).}
+(passed to \code{ExcludeUncommonPeaks}). Default = 100.}
 
 \item{state_signs}{Named vector indicating the “sign” (active/repressive) of each chromatin state.
 If NULL (default), will be generated automatically from \code{chromHMM_states} using
-\code{ChromatinStateSigns()} and the patterns provided.}
+\code{ChromatinStateSigns()} and the provided patterns.}
 
 \item{covariates}{(Optional) Character vector of covariate column names from
-\code{seurat_obj@meta.data} to regress out from the scores (e.g. TSS.enrichment, nCount_ATAC).}
+\code{seurat_obj@meta.data} to regress out from the scores
+(e.g. TSS.enrichment, nCount_ATAC).}
 
-\item{state_col}{Character; name of the metadata column in \code{chromHMM_states} containing the state label.}
+\item{state_col}{Character; name of the metadata column in \code{chromHMM_states}
+containing the state label. Default = \code{"name"}.}
 
-\item{active_patterns}{Character vector of patterns used to identify active states
-(passed to \code{ChromatinStateSigns()}). Default includes "TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk".}
+\item{active_patterns}{Character vector of regex patterns used to identify active states
+(passed to \code{ChromatinStateSigns()}).
+Default includes "TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk".}
 
-\item{repressive_patterns}{Character vector of patterns used to identify repressive states
-(passed to \code{ChromatinStateSigns()}). Default includes "ReprPC", "Quies", "Het".}
+\item{repressive_patterns}{Character vector of regex patterns used to identify
+repressive states (passed to \code{ChromatinStateSigns()}).
+Default includes "ReprPC", "Quies", "Het".}
 
 \item{pseudocount}{Numeric; pseudocount to add before calculating fractions
 (used by scoring functions). Default = 0.5.}
+
+\item{z_group_by}{(Optional) Column name in \code{seurat_obj@meta.data} specifying a group
+to use as reference for baseline Z-scoring. If \code{NULL}, Z-scores are computed
+across all cells.}
+
+\item{z_group_name}{(Optional) Name of the group (within \code{z_group_by}) to use as
+reference for baseline Z-scoring.}
 
 \item{assay}{Character; name of the Seurat assay containing scATAC data. Default = 'ATAC'.}
 }
@@ -67,41 +97,45 @@ If NULL (default), will be generated automatically from \code{chromHMM_states} u
 A list containing:
 \describe{
 \item{peaks_gr}{\code{GenomicRanges} of the filtered and annotated peaks.}
-\item{state_matrix}{Matrix of chromatin-state fractions per cell (rows = cells, cols = states).}
-\item{erosion}{Data frame of erosion scores per cell (optionally covariate-regressed).}
-\item{entropy}{Data frame of entropy-based plasticity scores per cell (optionally covariate-regressed).}
+\item{state_counts}{Matrix of raw chromatin-state counts per cell.}
+\item{state_frac}{Matrix of state fractions per cell.}
+\item{state_CLR}{Matrix of CLR-normalized state values.}
+\item{state_z}{Matrix of Z-scored CLR values (optionally baseline-scaled).}
+\item{scores}{Data frame containing erosion and entropy scores per cell
+(optionally covariate-regressed).}
 }
 }
 \description{
 A wrapper function to compute chromatin-state–based scores from scATAC-seq data
-stored in a Seurat object. This function:
-(1) annotates peaks with ChromHMM states,
-(2) filters peaks and sets up a chromatin state matrix per cell,
-(3) calculates an erosion score (active vs. repressive balance), and
-(4) calculates an entropy-based plasticity score.
+stored in a Seurat object. This function orchestrates the full pipeline:
+(1) annotates peaks with ChromHMM states (or accepts pre-annotated peaks),
+(2) filters peaks (stoplist, nonstandard chromosomes, and low-coverage filtering),
+(3) constructs and normalizes a chromatin state count/fraction matrix per cell,
+(4) computes an erosion score (active vs. repressive balance),
+and (5) computes an entropy-based plasticity score.
 }
 \details{
-This function orchestrates several steps:
-\itemize{
-\item Annotates each ATAC peak with its overlapping ChromHMM state.
-\item Filters peaks to remove blacklisted/nonstandard regions and optionally low-coverage peaks.
-\item Constructs a cell-by-state matrix (fraction of accessibility per state per cell).
-\item Computes an erosion score (active vs. repressive chromatin balance).
-\item Computes an entropy-based plasticity score (degree of state heterogeneity per cell).
+The workflow consists of:
+\enumerate{
+\item Peak annotation with ChromHMM states (unless \code{skip_annotation=TRUE}).
+\item Filtering peaks using stoplists, standard chromosomes, and minimum overlap rules.
+\item Feature-level filtering for low-coverage peaks.
+\item Construction of a cell-by-state matrix and normalization via fractions, CLR,
+and Z-scores (with optional reference group scaling).
+\item Calculation of the erosion score (balance between active and repressive states).
+\item Calculation of the entropy score (plasticity of chromatin states per cell).
 }
-
-The helper functions \code{AnnotatePeaks}, \code{ExcludeUncommonPeaks},
-\code{ChromatinStateSigns}, \code{CalculateStateMatrix}, \code{ErosionScore}, and
-\code{EntropyScore} must be defined and return objects in the expected format.
 }
 \examples{
 \dontrun{
-scores <- RunChromatic(
-    seurat_obj = atac_seurat,
-    chromHMM_states = chromHMM_mouse,
-    stoplist = blacklist_gr,
-    covariates = c("TSS.enrichment","nCount_ATAC")
+output <- RunChromatic(
+    seurat_obj = seurat_obj,
+    chromHMM_states = chromHMM_states,
 )
 }
 
+}
+\seealso{
+\code{\link{AnnotatePeaks}}, \code{\link{NormalizeStateMatrix}},
+\code{\link{ErosionScore}}, \code{\link{EntropyScore}}
 }

@@ -5,22 +5,15 @@
 \title{Assign Active/Repressive Signs to Chromatin States}
 \usage{
 ChromatinStateSigns(
-  chromHMM_states,
+  state_names,
   state_col = "name",
   active_patterns = c("TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk"),
-  repressive_patterns = c("ReprPC", "Quies", "Het")
-)
-
-ChromatinStateSigns(
-  chromHMM_states,
-  state_col = "name",
-  active_patterns = c("TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk"),
-  repressive_patterns = c("ReprPC", "Quies", "Het")
+  repressive_patterns = c("ReprPC", "Quies", "Het"),
+  error_if_unclassified = FALSE
 )
 }
 \arguments{
-\item{chromHMM_states}{A \code{GRanges} or similar object containing chromatin state
-annotations with a metadata column specifying state names.}
+\item{state_names}{Character string containing a unique list of chromatin state names.}
 
 \item{state_col}{Character string specifying the metadata column name in
 \code{chromHMM_states@elementMetadata} containing the state names. Default = \code{"name"}.}
@@ -41,35 +34,13 @@ A named numeric vector of signs with one entry per unique chromatin state:
 \item \code{+1}: Repressive state
 \item \code{0}: Unclassified (did not match any pattern)
 }
-
-A named numeric vector of signs with one entry per unique chromatin state:
-\itemize{
-\item \code{-1}: Active state
-\item \code{+1}: Repressive state
-\item \code{0}: Unclassified (did not match any pattern)
-}
 }
 \description{
 Generates a named vector of sign values (+1 = repressive, -1 = active, 0 = unclassified)
 for chromatin states based on user-specified patterns. This is typically used to
 weight states in functions such as \code{\link{ErosionScore}}.
-
-Generates a named vector of sign values (+1 = repressive, -1 = active, 0 = unclassified)
-for chromatin states based on user-specified patterns. This is typically used to
-weight states in functions such as \code{\link{ErosionScore}}.
 }
 \details{
-The function:
-\enumerate{
-\item Extracts unique chromatin state names from \code{chromHMM_states}.
-\item Initializes all state signs to 0 (unclassified).
-\item Assigns \code{-1} for states matching any \code{active_patterns}.
-\item Assigns \code{+1} for states matching any \code{repressive_patterns}.
-}
-
-The returned vector can be supplied to \code{\link{ErosionScore}}
-as the \code{state_signs} argument.
-
 The function:
 \enumerate{
 \item Extracts unique chromatin state names from \code{chromHMM_states}.
@@ -90,16 +61,7 @@ state_signs <- ChromatinStateSigns(
 )
 }
 
-\dontrun{
-state_signs <- ChromatinStateSigns(
-  chromHMM_states = chromHMM_gr,
-  state_col = "name"
-)
-}
-
 }
 \seealso{
-\code{\link{ErosionScore}}
-
 \code{\link{ErosionScore}}
 }

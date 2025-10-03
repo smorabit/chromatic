@@ -9,7 +9,9 @@ AnnotatePeaks(
   chromHMM_states,
   state_col = "name",
   keep_unannotated = FALSE,
-  min_overlap = 1
+  min_overlap = 1,
+  min_overlap_frac = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -21,13 +23,19 @@ Must contain a metadata column (default \code{"name"}) specifying state names.}
 \item{state_col}{Character string specifying the metadata column in
 \code{chromHMM_states} containing state labels. Default = \code{"name"}.}
 
-\item{keep_unannotated}{Logical; if \code{TRUE}, peaks without overlaps
-to any ChromHMM state are returned with \code{NA} in their \code{annotation} column.
+\item{keep_unannotated}{Logical; if \code{TRUE}, peaks without qualifying overlaps
+to any ChromHMM state are retained with \code{NA} in their \code{annotation} column.
 If \code{FALSE} (default), unannotated peaks are dropped.}
 
 \item{min_overlap}{Numeric; minimum overlap width (in bp) required for a peak
-to be assigned to a ChromHMM state. Peaks whose maximum overlap is below this
-threshold will be considered unannotated. Default = \code{1} (any overlap).}
+to be assigned to a ChromHMM state. Default = \code{1} (any overlap).}
+
+\item{min_overlap_frac}{Optional numeric; minimum fraction of a peak's length that
+must overlap a ChromHMM state for assignment. Must be between 0 and 1.
+If \code{NULL} (default), no fraction filter is applied.}
+
+\item{verbose}{Logical; if \code{TRUE} (default), prints a summary message about
+peaks removed due to overlap thresholds.}
 }
 \value{
 A \code{GRanges} object of peaks with added metadata columns:
@@ -35,38 +43,26 @@ A \code{GRanges} object of peaks with added metadata columns:
 \item \code{annotation} — the ChromHMM state label.
 \item \code{overlap_width} — width of overlap between the peak and
 its assigned ChromHMM state.
+\item \code{overlap_frac} — fraction of the peak length overlapping the state.
 }
 }
 \description{
 Assigns each peak in a \code{GRanges} object to the chromatin state with
 which it has the largest overlap from a ChromHMM \code{GRanges} annotation.
-This function is typically used to annotate peaks before computing
-state-level metrics (e.g., erosion or entropy scores).
+Supports filtering by both absolute and fractional overlap requirements.
 }
 \details{
 For each peak:
 \enumerate{
 \item The function finds all overlaps between peaks and ChromHMM states.
-\item It computes the width of each overlap.
-\item It assigns to each peak the state with the largest overlap
-(if \code{min_overlap} is met).
-\item It stores the overlap width in a new metadata column
-(\code{overlap_width}).
-\item By default, peaks without any overlap are dropped
-(set \code{keep_unannotated=TRUE} to retain them).
+\item It computes the absolute overlap width and fractional overlap relative
+to peak length.
+\item It assigns each peak to the state with the largest overlap, subject to
+\code{min_overlap} and \code{min_overlap_frac} thresholds.
+\item Overlap statistics are stored in new metadata columns.
+\item Peaks that fail the filters are optionally retained (\code{keep_unannotated})
+or dropped (default).
 }
-}
-\examples{
-\dontrun{
-annotated_peaks <- AnnotatePeaks(
-  peaks_gr = peaks_gr,
-  chromHMM_states = chromHMM_states,
-  state_col = "name",
-  keep_unannotated = TRUE,
-  min_overlap = 50
-)
-}
-
 }
 \seealso{
 \code{\link{ChromatinStateSigns}}, \code{\link{ErosionScore}}

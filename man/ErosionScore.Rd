@@ -4,10 +4,10 @@
 \alias{ErosionScore}
 \title{Calculate Erosion Scores from Chromatin State Matrices}
 \usage{
-ErosionScore(input, meta, state_signs, pseudocount = 0.5, covariates = NULL)
+ErosionScore(mat, meta, state_signs, covariates = NULL)
 }
 \arguments{
-\item{input}{A numeric matrix of chromatin state counts with cells as rows
+\item{mat}{A numeric matrix of chromatin states as columns an cells as rows
 and states as columns. Typically produced by \code{CalculateStateMatrix()}.}
 
 \item{meta}{A data frame (such as \code{seurat_obj@meta.data}) containing
@@ -16,20 +16,16 @@ cell-level metadata. Required if covariate regression is to be performed.}
 \item{state_signs}{A named numeric vector indicating the sign (+1 or -1)
 for each chromatin state. Names must match the column names of \code{input}.}
 
-\item{pseudocount}{A numeric value to add to counts to avoid division by
-zero. Default is 0.5.}
-
 \item{covariates}{A character vector of column names in \code{meta}
 specifying which covariates to regress out of the erosion score. Default is \code{NULL}.}
 }
 \value{
 A data frame with:
 \itemize{
-\item Z-scored values for each state per cell (columns = states).
 \item \code{erosion_score}: the raw erosion score per cell.
 \item \code{erosion_score_corrected} (if covariates given): residual
 erosion score with covariates regressed out.
-}
+}.
 }
 \description{
 Computes cell-level epigenomic erosion scores from a chromatin state
@@ -52,17 +48,6 @@ The erosion score is calculated as:
 If \code{covariates} is supplied, a linear model is fit using the
 specified covariates as predictors of the erosion score. The residuals
 from this model are returned as a covariate-corrected erosion score.
-}
-\examples{
-\dontrun{
-erosion_df <- ErosionScore(
-  input = state_matrix,
-  meta = seurat_obj@meta.data,
-  state_signs = state_signs,
-  covariates = c("TSS.enrichment", "nCount_ATAC")
-)
-}
-
 }
 \seealso{
 \code{\link{EntropyScore}}, \code{\link{CalculateStateMatrix}}
