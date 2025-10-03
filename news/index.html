@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">chromatic</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.02</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.03</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,10 +37,35 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.03" id="chromatic-0003-03-10-2025">chromatic 0.0.03 (03-10-2025)<a class="anchor" aria-label="anchor" href="#chromatic-0003-03-10-2025"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-0-03">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-03"></a></h3>
+<ul><li>
+<strong>Reference group Z-scoring</strong>: <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> and <code><a href="../reference/NormalizeStateMatrix.html">NormalizeStateMatrix()</a></code> now support baseline Z-scoring by specifying <code>z_group_by</code> and <code>z_group_name</code>. This allows erosion scores to be interpreted relative to a chosen reference group (e.g. control samples).</li>
+<li>
+<strong>Flexible peak annotation</strong>: Added <code>skip_annotation</code> option in <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> to allow users to provide pre-annotated peaks with ChromHMM state labels, bypassing the annotation step.</li>
+<li>
+<strong>Minimum overlap fraction</strong>: <code><a href="../reference/AnnotatePeaks.html">AnnotatePeaks()</a></code> and <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> now support filtering assignments with <code>min_overlap_frac</code>, requiring a peak to overlap a ChromHMM state by at least a fraction of its length (default = 0.25).</li>
+<li>
+<strong>Direct peak input</strong>: <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> accepts an optional <code>peaks_gr</code> argument, allowing users to provide a custom peak set instead of extracting peaks from the Seurat object.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-0-03">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-0-03"></a></h3>
+<ul><li>Expanded output: <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> now returns multiple normalized versions of the chromatin state matrix (<code>state_counts</code>, <code>state_frac</code>, <code>state_CLR</code>, <code>state_z</code>) for downstream analysis and benchmarking.</li>
+<li>Improved input validation in <code><a href="../reference/AnnotatePeaks.html">AnnotatePeaks()</a></code> and <code><a href="../reference/RunChromatic.html">RunChromatic()</a></code> (checks for valid metadata columns, overlap thresholds, etc.).</li>
+<li>More informative progress messages for annotation, filtering, and scoring steps.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-03">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-03"></a></h3>
+<ul><li>Fixed handling of peaks with no overlaps in <code><a href="../reference/AnnotatePeaks.html">AnnotatePeaks()</a></code> (previously dropped silently, now controlled by <code>keep_unannotated</code>).</li>
+<li>Corrected <code><a href="../reference/ErosionScore.html">ErosionScore()</a></code> to ensure consistent use of baseline scaling when reference group provided.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.02" id="chromatic-0002-27-09-2025">chromatic 0.0.02 (27-09-2025)<a class="anchor" aria-label="anchor" href="#chromatic-0002-27-09-2025"></a></h2>
 <div class="section level3">
 <h3 id="added-0-0-02">Added<a class="anchor" aria-label="anchor" href="#added-0-0-02"></a></h3>
-<ul><li>scATAC-seq tutorial.</li>
+<ul><li>The chromatic tutorial in a human scATAC-seq dataset.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-0-0-02">Changes<a class="anchor" aria-label="anchor" href="#changes-0-0-02"></a></h3>
