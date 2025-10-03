@@ -219,7 +219,6 @@ RunChromatic <- function(
     if(is.null(state_signs)){
         state_signs <- ChromatinStateSigns(
             state_names = state_names,
-            state_col = state_col,
             active_patterns = active_patterns,
             repressive_patterns = repressive_patterns
         )
@@ -531,7 +530,6 @@ ExcludeUncommonPeaks <- function(
 #' weight states in functions such as \code{\link{ErosionScore}}.
 #'
 #' @param state_names Character string containing a unique list of chromatin state names.
-#' @param state_col Character string specifying the metadata column name in 
 #' \code{chromHMM_states@elementMetadata} containing the state names. Default = \code{"name"}.
 #' @param active_patterns Character vector of regex patterns used to identify active states. 
 #' Default = \code{c("TssA","TssFlnk","Tx","EnhA","EnhG","EnhWk")}.
@@ -572,7 +570,6 @@ ExcludeUncommonPeaks <- function(
 #' @export
 ChromatinStateSigns <- function(
     state_names,
-    state_col = "name",
     active_patterns = c("TssA", "TssFlnk", "Tx", "EnhA", "EnhG", "EnhWk"),
     repressive_patterns = c("ReprPC", "Quies", "Het"),
     error_if_unclassified = FALSE
@@ -713,18 +710,18 @@ NormalizeStateMatrix <- function(
   state_mat,
   meta,
   pseudocount = 0.5,
-  group_by,
-  group_name,
+  group_by = NULL,
+  group_name = NULL,
   baseline_mu = NULL,
   baseline_sigma = NULL 
 ){
 
     # TODO: check that group_by and group_name are valid (present in meta)
-    if(!missing(group_by) & !missing(group_name)){
-        if(!group_by %in% colnames(meta)){
+    if(!is.null(group_by) | !is.null(group_name)){
+        if(!(group_by %in% colnames(meta))){
             stop(paste0("group_by '", group_by, "' not found in meta"))
         }
-        if(!group_name %in% meta[[group_by]]){
+        if(!(group_name %in% meta[[group_by]])){
             stop(paste0("group_name '", group_name, "' not found in meta$", group_by))
         }
     }

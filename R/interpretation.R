@@ -31,6 +31,8 @@ InterpretChromatic <- function(
     # setup the XGBoost data matrix
     dtrain <- xgb.DMatrix(data = X, label = y_true)
 
+    n_cells <- nrow(mat)
+
     # train with early stopping using a small validation split
     # TODO: add parameters here for the train/test split?
     train_idx <- sample(seq_len(n_cells), size = floor(0.8 * n_cells))
